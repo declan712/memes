@@ -44,22 +44,32 @@ function iterateResults(data) {
 // });
 
 $(document).ready(function() {
-var data = {
-    resource_id: 'cdafbbbf-c9ca-46a1-9f18-ecd9e8943040', // the resource id
-    limit: 5, // get 5 results
-    q: 'connor' // query for 'X'
-  };
-  $.ajax({
-    url: 'https://data.qld.gov.au/api/3/action/datastore_search',
-    data: data,
-    //dataType: 'jsonp',
-    cache: true,
-    success: function(data) {
-    //   alert('Total results found: ' + data.result.total)
-    //   jsonAsString = JSON.stringify(data, null, 2);
-    //   $("#results").html(jsonAsString);
-        iterateResults(data);
-    }
-  });
+
+    $("#search-button").click(function(event) {
+        event.preventDefault();
+        // alert(document.forms["search"]["searchbar"].value);
+        searchData(document.forms["search"]["searchbar"].value);
+    });
 
 });
+
+function searchData(query) {   
+    $("#records").html("");
+    var data = {
+        resource_id: 'cdafbbbf-c9ca-46a1-9f18-ecd9e8943040', // the resource id
+        limit: 5, // get 5 results
+        q: query // query for 'X'
+      };
+      $.ajax({
+        url: 'https://data.qld.gov.au/api/3/action/datastore_search',
+        data: data,
+        //dataType: 'jsonp',
+        cache: true,
+        success: function(data) {
+        //   alert('Total results found: ' + data.result.total)
+        //   jsonAsString = JSON.stringify(data, null, 2);
+        //   $("#results").html(jsonAsString);
+            iterateResults(data);
+        }
+      });
+};
