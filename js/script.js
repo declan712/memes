@@ -1,4 +1,11 @@
-
+jQuery.expr[':'].contains = function(a, i, m) {
+	return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
+};
+function getYear(year) {
+	if(year) {
+		return year.match(/[\d]{4}/);
+	}
+}
 function iterateResults(data) {
 
 	console.log(data);
@@ -8,19 +15,19 @@ function iterateResults(data) {
 	$.each(data.result.records, function(recordID, recordValue) {
 
 		var recordName = recordValue["Name"];
-		// var recordYear = getYear(recordValue["date"]);
+		var recordYear = getYear(recordValue["Date"]);
 		var recordBranch = recordValue["Branch"];
 		var recordPosition = recordValue["Position"];
 		var recordPay = recordValue["Remuneration"];
         var recordRemarks = recordValue["Remarks"];
 
-		if(recordName && recordBranch && recordPosition && recordPay && recordRemarks) {
+		if(recordName && recordBranch && recordPosition && recordPay && recordRemarks && recordYear) {
 			var clonedRecordTemplate = recordTemplate.clone();
 			clonedRecordTemplate.attr("id", "record-" + recordID).removeClass("record-template");
 			clonedRecordTemplate.appendTo("#records");
 
 			$("#record-" + recordID + " h2").html(recordName);
-            // $("#record-" + recordID + " .year").html(recordYear);
+            $("#record-" + recordID + " .year").html(recordYear);
             $("#record-" + recordID + " .branch").html(recordBranch);
             $("#record-" + recordID + " .position").html(recordPosition);
             $("#record-" + recordID + " .pay").html(recordPay);
@@ -30,7 +37,23 @@ function iterateResults(data) {
 
 		}
 
+    });
+    $("#record-count strong").text($(".record:visible").length);
+	$("#filter-text").keyup(function() {
+	
+		var searchTerm = $(this).val();
+		console.log(searchTerm);
+	
+		$(".record").hide();
+		$(".record:contains('" + searchTerm + "')").show();
+		$(".record-template").hide();
+	
+		$("#record-count strong").text($(".record:visible").length);
+	
 	});
+	setTimeout(function() {
+		$("body").addClass("loaded");
+	}, 200); // 0.2 second delay
 
 }
 // $.ajax({
@@ -57,7 +80,7 @@ function searchData(query) {
     $("#records").html("");
     var data = {
         resource_id: 'cdafbbbf-c9ca-46a1-9f18-ecd9e8943040', // the resource id
-        limit: 5, // get 5 results
+        limit: 100, // get 5 results
         q: query // query for 'X'
       };
       $.ajax({
